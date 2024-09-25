@@ -1,0 +1,22 @@
+# Ignore virtual environment files
+venv/
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore environment variables and sensitive config files
+.env
+
+# Ignore system-specific files
+.DS_Store
+
+
+data_man.py
+
+Logistic_regression.py
+
+test.py
+
+train_p.py
+
+train.py

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+    <style>
+        /* Light mode (default) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        label {
+            flex-basis: 50%;
+            text-align: right;
+            padding-right: 10px;
+        }
+        input {
+            flex-basis: 50%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff; /* Blue for light mode */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .prediction-container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .prediction-text {
+            font-size: 1.5em;
+            color: #333;
+            margin: 0;
+        }
+
+        .prediction-header {
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #2b2d42; /* Muted dark gray */
+            color: #e0e0e0;
+        }
+        form.dark-mode {
+            background-color: #3a3b57;
+            color: #e0e0e0;
+        }
+        .prediction-container.dark-mode {
+            background-color: #3a3b57;
+            color: #e0e0e0;
+        }
+        button.dark-mode {
+            background-color: #ff6700; /* Orange for dark mode */
+            color: white;
+        }
+        button.dark-mode:hover {
+            background-color: #e65c00; /* Darker orange on hover */
+        }
+        .prediction-header.dark-mode {
+            background-color: #3a3b57;
+            color: #e0e0e0;
+        }
+        /* Dark mode prediction text */
+        .prediction-text.dark-mode {
+            color: #00adb5; /* Vibrant color for predictions */
+        }
+
+    </style>
+</head>
+<body>
+    <h2 class ="prediction-header">Enter the property details to get a price prediction:</h2>
+    <button id="darkModeToggle">Toggle Dark Mode</button> <!-- Dark mode toggle button -->
+    <form id="prediction-form">
+        <div class="form-group">
+            <label for="Median_Income">Median Income:</label>
+            <input type="text" name="Median_Income" id="Median_Income">
+        </div>
+        <div class="form-group">
+            <label for="House_Age">House Age:</label>
+            <input type="text" name="House_Age" id="House_Age">
+        </div>
+        <div class="form-group">
+            <label for="Avg_Number_of_Rooms">Average Number of Rooms:</label>
+            <input type="text" name="Avg_Number_of_Rooms" id="Avg_Number_of_Rooms">
+        </div>
+        <div class="form-group">
+            <label for="Avg_Number_of_Bedrooms">Average Number of Bedrooms:</label>
+            <input type="text" name="Avg_Number_of_Bedrooms" id="Avg_Number_of_Bedrooms">
+        </div>
+        <div class="form-group">
+            <label for="Population">Population:</label>
+            <input type="text" name="Population" id="Population">
+        </div>
+        <div class="form-group">
+            <label for="Avg_Occupancy">Avg Occupancy:</label>
+            <input type="text" name="Avg_Occupancy" id="Avg_Occupancy">
+        </div>
+        <div class="form-group">
+            <label for="Latitude">Latitude:</label>
+            <input type="text" name="Latitude" id="Latitude">
+        </div>
+        <div class="form-group">
+            <label for="Longitude">Longitude:</label>
+            <input type="text" name="Longitude" id="Longitude">
+        </div>
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="prediction-container" class="prediction-container" style="display:none;">
+        <p class="prediction-text" id="prediction-text"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('prediction-form');
+        const predictionContainer = document.getElementById('prediction-container');
+        const predictionText = document.getElementById('prediction-text');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            form.classList.toggle('dark-mode');
+            predictionContainer.classList.toggle('dark-mode');
+            document.querySelector('.prediction-header').classList.toggle('dark-mode');
+            predictionText.classList.toggle('dark-mode');
+            darkModeToggle.classList.toggle('dark-mode'); // Change button color based on mode
+
+            // Change button text based on current mode
+            if (document.body.classList.contains('dark-mode')) {
+                darkModeToggle.textContent = "Toggle Light Mode";
+            } else {
+                darkModeToggle.textContent = "Toggle Dark Mode";
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: data
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    predictionText.textContent = `Error: ${result.error}`;
+                } else {
+                    predictionText.innerHTML = `Predicted Price: ${result.prediction} <br> Predicted Price with RF: ${result.prediction_rf}`;
+                }
+
+                predictionContainer.style.display = 'block';
+            } catch (error) {
+                predictionText.textContent = `Error: ${error.message}`;
+                predictionContainer.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
